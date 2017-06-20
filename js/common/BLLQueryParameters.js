@@ -20,7 +20,7 @@ define( function( require ) {
     // {string} units on the concentration meter, see beers-law-lab#149
     concentrationMeterUnits: {
       type: 'string',
-      validValues: [ 'molesPerLiter', 'percent' ],
+      validValues: [ 'molesPerLiter', 'percent', 'gramesPerLiter' ],
       defaultValue: 'molesPerLiter'
     },
 

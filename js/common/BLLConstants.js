@@ -11,6 +11,7 @@ define( function( require ) {
   // modules
   var beersLawLab = require( 'BEERS_LAW_LAB/beersLawLab' );
   var Bounds2 = require( 'DOT/Bounds2' );
+
   var RangeWithValue = require( 'DOT/RangeWithValue' );
 
   // constants used to compute other constants
@@ -19,6 +20,7 @@ define( function( require ) {
   var BLLConstants = {
     SCREEN_VIEW_OPTIONS: { layoutBounds: new Bounds2( 0, 0, 1100, 700 ) },
     RADIO_BUTTON_RADIUS: 11,
+
     SOLUTE_AMOUNT_RANGE: new RangeWithValue( 0, 7, 0 ), // moles
     SOLUTION_VOLUME_RANGE: new RangeWithValue( 0, BEAKER_VOLUME, 0.5 ), // liters
     BEAKER_VOLUME: BEAKER_VOLUME,

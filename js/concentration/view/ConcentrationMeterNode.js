@@ -41,6 +41,7 @@ define( function( require ) {
   var pattern0PercentString = require( 'string!BEERS_LAW_LAB/pattern.0percent' );
   var pattern0Value1UnitsString = require( 'string!BEERS_LAW_LAB/pattern.0value.1units' );
   var unitsMolesPerLiterString = require( 'string!BEERS_LAW_LAB/units.molesPerLiter' );
+  var unitsGramesPerLiterString = 'g/L';
 
   // constants
   var BODY_IS_DRAGGABLE = true;
@@ -52,7 +53,7 @@ define( function( require ) {
   var READOUT_X_MARGIN = 8;
   var READOUT_Y_MARGIN = 4;
   var PROBE_COLOR = 'rgb( 135, 4, 72 )';
-  var DISPLAY_MOLES_PER_LITER = ( BLLQueryParameters.CONCENTRATION_METER_UNITS === 'molesPerLiter' );
+  var CONCENTRATION_METER_UNITS = BLLQueryParameters.CONCENTRATION_METER_UNITS;
 
   /**
    * @param {ConcentrationMeter} meter
@@ -83,17 +84,31 @@ define( function( require ) {
 
     var updateValue = function() {
       if ( probeNode.isInSolution() || probeNode.isInDrainFluid() ) {
-        meter.valueProperty.set( DISPLAY_MOLES_PER_LITER ?
-                                 solution.concentrationProperty.get() :
-                                 solution.percentConcentrationProperty.get() );
+       switch(CONCENTRATION_METER_UNITS) {
+         case 'molesPerLiter':
+           meter.valueProperty.set(solution.concentrationProperty.get());
+           break;
+         case 'gramesPerLiter':
+           meter.valueProperty.set(solution.concentrationGramesPerLiterProperty.get());
+           break;
+         default:
+           meter.valueProperty.set(solution.percentConcentrationProperty.get());
+       }
       }
       else if ( probeNode.isInSolvent() ) {
         meter.valueProperty.set( 0 );
       }
       else if ( probeNode.isInStockSolution() ) {
-        meter.valueProperty.set( DISPLAY_MOLES_PER_LITER ?
-                                 dropper.soluteProperty.get().stockSolutionConcentration :
-                                 dropper.soluteProperty.get().stockSolutionPercentConcentration );
+        switch(CONCENTRATION_METER_UNITS) {
+          case 'molesPerLiter':
+            meter.valueProperty.set(dropper.soluteProperty.get().stockSolutionConcentration);
+            break;
+          case 'gramesPerLiter':
+            meter.valueProperty.set(dropper.soluteProperty.get().stockSolutionConcentration);
+            break;
+          default:
+            meter.valueProperty.set(dropper.soluteProperty.get().stockSolutionPercentConcentration);
+        }
       }
       else {
         meter.valueProperty.set( null );
@@ -102,11 +117,15 @@ define( function( require ) {
 
     meter.probe.locationProperty.link( updateValue );
     solution.soluteProperty.link( updateValue );
-    if ( DISPLAY_MOLES_PER_LITER ) {
-      solution.concentrationProperty.link( updateValue );
-    }
-    else {
-      solution.percentConcentrationProperty.link( updateValue );
+    switch(CONCENTRATION_METER_UNITS) {
+      case 'molesPerLiter':
+        solution.concentrationProperty.link( updateValue );
+        break;
+      case 'gramesPerLiter':
+        solution.concentrationGramesPerLiterProperty.link(updateValue);
+        break;
+      default:
+        solution.percentConcentrationProperty.link( updateValue );
     }
     solutionNode.addEventListener( 'bounds', updateValue );
     stockSolutionNode.addEventListener( 'bounds', updateValue );
@@ -147,7 +166,7 @@ define( function( require ) {
       unitsMolesPerLiterString
     );
     var readoutTextNode = new TandemText( formattedText, {
-      font: new PhetFont( 24 ),
+      font: new PhetFont( 20 ),
       fill: 'black',
       maxWidth: maxTextWidth,
       tandem: tandem.createTandem( 'readoutTextNode' )
@@ -209,11 +228,15 @@ define( function( require ) {
 
         // display concentration as 'mol/L' or '%', see beers-law-lab#149
         var readoutText = null;
-        if ( DISPLAY_MOLES_PER_LITER ) {
-          readoutText = StringUtils.format( pattern0Value1UnitsString, Util.toFixed( value, DECIMAL_PLACES_MOLES_PER_LITER ), unitsMolesPerLiterString );
-        }
-        else {
-          readoutText = StringUtils.format( pattern0PercentString, Util.toFixed( value, DECIMAL_PLACES_PERCENT ) );
+        switch(CONCENTRATION_METER_UNITS) {
+          case 'molesPerLiter':
+            readoutText = StringUtils.format( pattern0Value1UnitsString, Util.toFixed( value, DECIMAL_PLACES_MOLES_PER_LITER ), unitsMolesPerLiterString );
+            break;
+          case 'gramesPerLiter':
+            readoutText = StringUtils.format( pattern0Value1UnitsString, Util.toFixed( value, DECIMAL_PLACES_MOLES_PER_LITER ), unitsGramesPerLiterString );
+            break;
+          default:
+            readoutText = StringUtils.format( pattern0PercentString, Util.toFixed( value, DECIMAL_PLACES_PERCENT ) );
         }
         readoutTextNode.setText( readoutText );
         readoutTextNode.right = readoutBackgroundNode.right - READOUT_X_MARGIN; // right justified

@@ -64,6 +64,16 @@ define( function( require ) {
       }
     );
 
+    // @public derive concentration (g/L)
+    thisSolution.concentrationGramesPerLiterProperty = new DerivedProperty(
+      [ thisSolution.soluteProperty, thisSolution.soluteAmountProperty, thisSolution.volumeProperty ],
+      function( solute, soluteAmount, volume ) {
+        return ( volume > 0 ) ?  solute.molarMass * Math.min( thisSolution.getSaturatedConcentration(), soluteAmount / volume ) : 0;
+      }, {
+        tandem: tandem.createTandem( 'concentrationGramesPerLiterProperty' )
+      }
+    );
+
     // @public boolean property indicating whether the solution is saturated or not.
     this.saturatedProperty = new DerivedProperty( [ this.soluteProperty, this.soluteAmountProperty, this.volumeProperty ],
       function( solute, soluteAmount, volume ) {

@@ -14,7 +14,7 @@ define( function( require ) {
   var getQueryParameter = phet.chipper.getQueryParameter;
 
   // constants - valid values, 0th element is the default
-  var CONCENTRATION_METER_UNITS_VALUES = [ 'molesPerLiter', 'percent' ];
+  var CONCENTRATION_METER_UNITS_VALUES = [ 'molesPerLiter', 'percent', 'gramesPerLiter' ];
   var BEAKER_TICK_UNITS_VALUES = [ 'liters', 'milliliters' ];
 
   var BLLQueryParameters = {
